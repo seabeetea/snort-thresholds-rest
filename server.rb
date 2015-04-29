@@ -75,20 +75,32 @@ module SnortThresholdsRest
         end
       end
 
-      get '/thresholds/:action' do
+      get '/thresholds/*' do
         begin
           content_type :json
-          t = Threshold::Thresholds.new
-          t.file = DATAFILE
-          t.loadfile
-          # doesn't include: reject, select
-          if ['sort', 'reverse', 'shuffle', 'uniq', 'suppressions', 'event_filters', 'rate_filters'].include?(params[:action])
-            return { 'thresholds' => t.send(params[:action]).to_a }.to_json
+          known_actions = ['sort', 'reverse', 'shuffle', 'uniq', 'suppressions', 'event_filters', 'rate_filters']
+          actions = []
+          params['splat'].each do |p|
+            p.split('/').each do |a|
+              actions << a
+            end
+          end
+
+          if (actions - known_actions).count == 0
+            t = Threshold::Thresholds.new
+            t.file = DATAFILE
+            t.loadfile
+
+            t_mod = t
+            actions.each do |a|
+              t_mod = t_mod.send(a)
+            end
+            return { 'thresholds' => t_mod.to_a }.to_json
           else
-            return badrequest 'unknown action on thresholds'
+            return badrequest "unknown actions: #{(actions - known_actions).join(',')}"
           end
         rescue
-          return internalerror "there was a problem with #{params[:action]}"
+          return internalerror "there was a problem with running actions on thresholds"
         end
       end
 
