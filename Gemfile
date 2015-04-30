@@ -11,4 +11,7 @@ group :test do
   gem 'rack-test', require: nil
   gem 'codeclimate-test-reporter', require: nil
   gem 'minitest-reporters', require: nil
+  gem 'rspec', '~> 3.1'
+  gem 'simplecov', require: nil
+  gem 'pry', require: nil
 end

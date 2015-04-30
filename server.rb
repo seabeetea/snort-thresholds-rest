@@ -86,7 +86,7 @@ module SnortThresholdsRest
         end
       end
 
-      get '/thresholds/:type/new' do
+      post '/thresholds/:type/new' do
         begin
           content_type :json
 
@@ -101,8 +101,8 @@ module SnortThresholdsRest
             return badrequest "invalid filter type #{params[:type]}"
           end
 
-          filter.gid = params['gid'].to_i if params['gid']
-          filter.sid = params['sid'].to_i if params['sid']
+          filter.gid = Integer(params['gid']) if params['gid']
+          filter.sid = Integer(params['sid']) if params['sid']
           filter.track_by = params['track_by'] if params['track_by']
           filter.comment = params['comment'] if params['comment']
           filter.comment = "##{filter.comment}" if filter.comment and filter.comment !~ /\s*#/
@@ -111,13 +111,13 @@ module SnortThresholdsRest
             filter.ip = params['ip'] if params['ip']
           elsif params[:type] == 'event_filter'
             filter.type = params['type'] if params['type']
-            filter.count = params['count'].to_i if params['count']
-            filter.seconds = params['seconds'].to_i if params['seconds']
+            filter.count = Integer(params['count']) if params['count']
+            filter.seconds = Integer(params['seconds']) if params['seconds']
           elsif params[:type] == 'rate_filter'
-            filter.count = params['count'].to_i if params['count']
+            filter.count = Integer(params['count']) if params['count']
             filter.new_action = params['new_action'] if params['new_action']
-            filter.seconds = params['seconds'].to_i if params['seconds']
-            filter.timeout = params['timeout'].to_i if params['timeout']
+            filter.seconds = Integer(params['seconds']) if params['seconds']
+            filter.timeout = Integer(params['timeout']) if params['timeout']
           end
 
           begin
@@ -158,7 +158,7 @@ module SnortThresholdsRest
           end
 
           t_new = t.select do |filter|
-            filter.is_a?(filter_type) and filter.sid == params['sid'].to_i and filter.gid == params['gid'].to_i
+            filter.is_a?(filter_type) and filter.sid == Integer(params['sid']) and filter.gid == Integer(params['gid'])
           end
 
           return { 'thresholds' => t_new.to_a }.to_json
@@ -167,7 +167,7 @@ module SnortThresholdsRest
         end
       end
 
-      get '/thresholds/:type/update' do
+      post '/thresholds/:type/update' do
         begin
           content_type :json
 
@@ -187,7 +187,7 @@ module SnortThresholdsRest
           end
 
           first_index = t.index.find_index do |filter|
-            filter.is_a?(filter_type) and filter.sid == params['sid'].to_i and filter.gid == params['gid'].to_i
+            filter.is_a?(filter_type) and filter.sid == Integer(params['sid']) and filter.gid == Integer(params['gid'])
           end
 
           if not first_index
@@ -202,13 +202,13 @@ module SnortThresholdsRest
             t[first_index].ip = params['ip'] if params['ip']
           elsif params[:type] == 'event_filter'
             t[first_index].type = params['type'] if params['type']
-            t[first_index].count = params['count'].to_i if params['count']
-            t[first_index].seconds = params['seconds'].to_i if params['seconds']
+            t[first_index].count = Integer(params['count']) if params['count']
+            t[first_index].seconds = Integer(params['seconds']) if params['seconds']
           elsif params[:type] == 'rate_filter'
-            t[first_index].count = params['count'].to_i if params['count']
+            t[first_index].count = Integer(params['count']) if params['count']
             t[first_index].new_action = params['new_action'] if params['new_action']
-            t[first_index].seconds = params['seconds'].to_i if params['seconds']
-            t[first_index].timeout = params['timeout'].to_i if params['timeout']
+            t[first_index].seconds = Integer(params['seconds']) if params['seconds']
+            t[first_index].timeout = Integer(params['timeout']) if params['timeout']
           end
 
           t.flush
@@ -219,7 +219,7 @@ module SnortThresholdsRest
         end
       end
 
-      get '/thresholds/:type/delete' do
+      post '/thresholds/:type/delete' do
         begin
           content_type :json
 
@@ -239,7 +239,7 @@ module SnortThresholdsRest
           end
 
           t.reject! do |filter|
-            filter.is_a?(filter_type) and filter.sid == params['sid'].to_i and filter.gid == params['gid'].to_i
+            filter.is_a?(filter_type) and filter.sid == Integer(params['sid']) and filter.gid == Integer(params['gid'])
           end
 
           t.flush
