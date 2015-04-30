@@ -1,5 +1,5 @@
 module SnortThresholdsRest
 
-  DATAFILE = 'threshold.conf'
+  DATAFILE = 'test/threshold.conf'
 
 end

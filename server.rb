@@ -86,19 +86,19 @@ module SnortThresholdsRest
         end
       end
 
-      post '/thresholds/:type/new' do
+      post '/thresholds/:filter_type/new' do
         begin
           content_type :json
 
           filter = nil
-          if params[:type] == 'suppression'
+          if params[:filter_type] == 'suppression'
             filter = Threshold::Suppression.new
-          elsif params[:type] == 'event_filter'
+          elsif params[:filter_type] == 'event_filter'
             filter = Threshold::EventFilter.new
-          elsif params[:type] == 'rate_filter'
+          elsif params[:filter_type] == 'rate_filter'
             filter = Threshold::RateFilter.new
           else
-            return badrequest "invalid filter type #{params[:type]}"
+            return badrequest "invalid filter type #{params[:filter_type]}"
           end
 
           filter.gid = Integer(params['gid']) if params['gid']
@@ -107,13 +107,13 @@ module SnortThresholdsRest
           filter.comment = params['comment'] if params['comment']
           filter.comment = "##{filter.comment}" if filter.comment and filter.comment !~ /\s*#/
 
-          if params[:type] == 'suppression'
+          if params[:filter_type] == 'suppression'
             filter.ip = params['ip'] if params['ip']
-          elsif params[:type] == 'event_filter'
+          elsif params[:filter_type] == 'event_filter'
             filter.type = params['type'] if params['type']
             filter.count = Integer(params['count']) if params['count']
             filter.seconds = Integer(params['seconds']) if params['seconds']
-          elsif params[:type] == 'rate_filter'
+          elsif params[:filter_type] == 'rate_filter'
             filter.count = Integer(params['count']) if params['count']
             filter.new_action = params['new_action'] if params['new_action']
             filter.seconds = Integer(params['seconds']) if params['seconds']
@@ -123,7 +123,7 @@ module SnortThresholdsRest
           begin
             filter.to_s
           rescue
-            return badrequest "invalid #{params[:type]}"
+            return badrequest "invalid #{params[:filter_type]}"
           end
 
           t = Threshold::Thresholds.new
@@ -131,14 +131,14 @@ module SnortThresholdsRest
           t.loadfile
           t << filter
           t.flush
-
+          
           return { 'thresholds' => t.to_a }.to_json
         rescue
-          return internalerror "there was a problem creating #{params[:type]}"
+          return internalerror "there was a problem creating #{params[:filter_type]}"
         end
       end
 
-      get '/thresholds/:type' do
+      get '/thresholds/:filter_type' do
         begin
           content_type :json
 
@@ -147,14 +147,14 @@ module SnortThresholdsRest
           t.loadfile
 
           filter_type = nil
-          if params[:type] == 'suppression'
+          if params[:filter_type] == 'suppression'
             filter_type = Threshold::Suppression
-          elsif params[:type] == 'event_filter'
+          elsif params[:filter_type] == 'event_filter'
             filter_type = Threshold::EventFilter
-          elsif params[:type] == 'rate_filter'
+          elsif params[:filter_type] == 'rate_filter'
             filter_type = Threshold::RateFilter
           else
-            return badrequest "invalid filter type #{params[:type]}"
+            return badrequest "invalid filter type #{params[:filter_type]}"
           end
 
           t_new = t.select do |filter|
@@ -163,11 +163,11 @@ module SnortThresholdsRest
 
           return { 'thresholds' => t_new.to_a }.to_json
         rescue
-          return internalerror "there was a problem getting #{params[:type]}"
+          return internalerror "there was a problem getting #{params[:filter_type]}"
         end
       end
 
-      post '/thresholds/:type/update' do
+      post '/thresholds/:filter_type/update' do
         begin
           content_type :json
 
@@ -176,14 +176,14 @@ module SnortThresholdsRest
           t.loadfile
 
           filter_type = nil
-          if params[:type] == 'suppression'
+          if params[:filter_type] == 'suppression'
             filter_type = Threshold::Suppression
-          elsif params[:type] == 'event_filter'
+          elsif params[:filter_type] == 'event_filter'
             filter_type = Threshold::EventFilter
-          elsif params[:type] == 'rate_filter'
+          elsif params[:filter_type] == 'rate_filter'
             filter_type = Threshold::RateFilter
           else
-            return badrequest "invalid filter type #{params[:type]}"
+            return badrequest "invalid filter type #{params[:filter_type]}"
           end
 
           first_index = t.index.find_index do |filter|
@@ -191,20 +191,20 @@ module SnortThresholdsRest
           end
 
           if not first_index
-            return notfound "#{params[:type]} not found"
+            return notfound "#{params[:filter_type]} not found"
           end
 
           t[first_index].track_by = params['track_by'] if params['track_by']
           t[first_index].comment = params['comment'] if params['comment']
           t[first_index].comment = "##{t[first_index].comment}" if t[first_index].comment and t[first_index].comment !~ /^\s*#/
 
-          if params[:type] == 'suppression'
+          if params[:filter_type] == 'suppression'
             t[first_index].ip = params['ip'] if params['ip']
-          elsif params[:type] == 'event_filter'
+          elsif params[:filter_type] == 'event_filter'
             t[first_index].type = params['type'] if params['type']
             t[first_index].count = Integer(params['count']) if params['count']
             t[first_index].seconds = Integer(params['seconds']) if params['seconds']
-          elsif params[:type] == 'rate_filter'
+          elsif params[:filter_type] == 'rate_filter'
             t[first_index].count = Integer(params['count']) if params['count']
             t[first_index].new_action = params['new_action'] if params['new_action']
             t[first_index].seconds = Integer(params['seconds']) if params['seconds']
@@ -215,11 +215,11 @@ module SnortThresholdsRest
 
           return { 'thresholds' => t.to_a }.to_json
         rescue
-          return internalerror "there was a problem updating #{params[:type]}"
+          return internalerror "there was a problem updating #{params[:filter_type]}"
         end
       end
 
-      post '/thresholds/:type/delete' do
+      post '/thresholds/:filter_type/delete' do
         begin
           content_type :json
 
@@ -228,14 +228,14 @@ module SnortThresholdsRest
           t.loadfile
 
           filter_type = nil
-          if params[:type] == 'suppression'
+          if params[:filter_type] == 'suppression'
             filter_type = Threshold::Suppression
-          elsif params[:type] == 'event_filter'
+          elsif params[:filter_type] == 'event_filter'
             filter_type = Threshold::EventFilter
-          elsif params[:type] == 'rate_filter'
+          elsif params[:filter_type] == 'rate_filter'
             filter_type = Threshold::RateFilter
           else
-            return badrequest "invalid filter type #{params[:type]}"
+            return badrequest "invalid filter type #{params[:filter_type]}"
           end
 
           t.reject! do |filter|
@@ -246,7 +246,7 @@ module SnortThresholdsRest
 
           return { 'thresholds' => t.to_a }.to_json
         rescue
-          return internalerror "there was a problem deleting #{params[:type]}"
+          return internalerror "there was a problem deleting #{params[:filter_type]}"
         end
       end
 

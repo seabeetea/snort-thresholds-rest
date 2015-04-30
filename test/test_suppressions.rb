@@ -48,7 +48,7 @@ describe SnortThresholdsRest::Server do
   it 'prints a valid configuration line' do
     post "/thresholds/suppression/new?sid=123&gid=456&track_by=dst&ip=1.2.3.4/8&comment=#{CGI.escape 'More good lines [smm]'}"
     json = JSON.parse(last_response.body)
-    expect(json['thresholds'].include?('suppress gen_id 456, sig_id 123, track by_dst, ip 1.2.3.4/8 #More good lines [smm]')).to eq true
+    expect(json['thresholds'].include?('suppress gen_id 456, sig_id 123, track by_dst, ip 1.2.3.4/8#More good lines [smm]')).to eq true
   end
 
   #Test failure if CIDR is too long
@@ -111,4 +111,26 @@ describe SnortThresholdsRest::Server do
     expect(last_response.ok?).to eq false
   end
 
+  it 'should create and delete suppressions' do
+    post '/thresholds/suppression/new?sid=123&gid=456'
+    expect(last_response.ok?).to eq true
+    post '/thresholds/suppression/delete?sid=123&gid=456'
+    expect(last_response.ok?).to eq true
+  end
+
+  it 'should create and update suppressions' do
+    post '/thresholds/suppression/new?sid=123&gid=456'
+    expect(last_response.ok?).to eq true
+    post "/thresholds/suppression/update?sid=123&gid=456&track_by=src&ip=1.1.1.1&comment=#{CGI.escape 'comment goes here'}"
+    expect(last_response.ok?).to eq true
+  end
+
+  it 'should create and find suppressions' do
+    post '/thresholds/suppression/new?sid=123&gid=456'
+    expect(last_response.ok?).to eq true
+    get "/thresholds/suppression?sid=123&gid=456"
+    expect(last_response.ok?).to eq true
+    json = JSON.parse(last_response.body)
+    expect(json['thresholds'].include?('suppress gen_id 456, sig_id 123')).to eq true
+  end
 end

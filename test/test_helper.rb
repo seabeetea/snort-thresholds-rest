@@ -3,8 +3,8 @@ require 'rubygems'
 require 'rack/test'
 require 'rspec'
 require 'json'
-require_relative 'config.rb'
 require_relative '../server.rb'
+require_relative 'config.rb'
 
 require 'simplecov'
 SimpleCov.start
