@@ -14,20 +14,19 @@ rackup server.ru
 Make requests:
 
 ```
-# get json of thresholds file
-/file/load
-
-# same thing
+# get thresholds
 /thresholds
 
-# get whether or not file is valid
-/file/valid
+# get whether or not thresholds are valid
+/thresholds/valid
 
-# get file hash
-/file/hash
+# get tresholds hash
+/thresholds/hash
 
-# create a new suppression
-/suppression/new?sid=123&gid=456
+# create suppressions, event filters, and rate filters
+/thresholds/suppression/new?sid=1&gid=1&comment=comment goes here
+/thresholds/event_filter/new?sid=2&gid=2&type=limit&track_by=src&count=10&seconds=60&comment=comment goes here
+/thresholds/rate_filter/new?gid=3&sid=3&track_by=src&count=10&new_action=drop&seconds=60&comment=comment goes here
 
 # filter thresholds
 /thresholds/sort
