@@ -3,6 +3,7 @@ Edit thresholds filename in `config.rb`:
 
 ```
 DATAFILE = '/tmp/threshold.conf'
+APIFILE = 'api.conf'
 ```
 
 Start server:
