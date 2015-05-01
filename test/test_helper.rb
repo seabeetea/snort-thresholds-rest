@@ -15,6 +15,9 @@ CodeClimate::TestReporter.start
 require "threshold"
 require 'pry'
 
+MASTERKEY = '35285fe4-c29f-4a2f-9189-6264f1728993'
+NOPOSTKEY = '54b22f56-9a84-4893-bc70-332e3b5ded66'
+
 module RSpecMixin
   include Rack::Test::Methods
   def app() SnortThresholdsRest::Server end
