@@ -19,7 +19,7 @@ describe SnortThresholdsRest::Server do
   #Standard working test of all fields
   it 'prints a valid configuration line' do
     post "/thresholds/event_filter/new?sid=123&gid=456&type=limit&track_by=src&count=10&seconds=60&comment=#{CGI.escape 'This is a good line [smm]'}&api_key=#{MASTERKEY}"
-    get "/thresholds/event_filter?sid=123&gid=456"
+    get "/thresholds/event_filter?sid=123&gid=456&api_key=#{MASTERKEY}"
     json = JSON.parse(last_response.body)
     expect(json['thresholds'].include?('event_filter gen_id 456, sig_id 123, type limit, track by_src, count 10, seconds 60#This is a good line [smm]')).to eq true
   end
@@ -27,7 +27,7 @@ describe SnortThresholdsRest::Server do
   #Standard working test of all fields
   it 'prints a valid configuration line' do
     post "/thresholds/event_filter/new?sid=123&gid=456&type=limit&track_by=src&count=10&seconds=60&comment=#{CGI.escape 'This is a good line [smm]'}&api_key=#{MASTERKEY}"
-    get "/thresholds/event_filter?sid=123&gid=222"
+    get "/thresholds/event_filter?sid=123&gid=222&api_key=#{MASTERKEY}"
     json = JSON.parse(last_response.body)
     expect(json['thresholds'].include?('event_filter gen_id 456, sig_id 123, type limit, track by_src, count 10, seconds 60#This is a good line [smm]')).to eq false
   end
@@ -116,7 +116,7 @@ describe SnortThresholdsRest::Server do
     expect(last_response.ok?).to eq true
     post "/thresholds/event_filter/update?sid=123&gid=456&track_by=dst&api_key=#{MASTERKEY}"
     expect(last_response.ok?).to eq true
-    get "/thresholds/event_filter?sid=123&gid=456"
+    get "/thresholds/event_filter?sid=123&gid=456&api_key=#{MASTERKEY}"
     expect(last_response.ok?).to eq true
     json = JSON.parse(last_response.body)
     expect(json['thresholds'].include?('event_filter gen_id 456, sig_id 123, type limit, track by_dst, count 10, seconds 60')).to eq true
@@ -125,7 +125,7 @@ describe SnortThresholdsRest::Server do
   it 'should create and find event_filters' do
     post "/thresholds/event_filter/new?sid=123&gid=456&type=limit&track_by=src&count=10&seconds=60&api_key=#{MASTERKEY}"
     expect(last_response.ok?).to eq true
-    get "/thresholds/event_filter?sid=123&gid=456"
+    get "/thresholds/event_filter?sid=123&gid=456&api_key=#{MASTERKEY}"
     expect(last_response.ok?).to eq true
     json = JSON.parse(last_response.body)
     expect(json['thresholds'].include?('event_filter gen_id 456, sig_id 123, type limit, track by_src, count 10, seconds 60')).to eq true

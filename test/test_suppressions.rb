@@ -128,7 +128,7 @@ describe SnortThresholdsRest::Server do
   it 'should create and find suppressions' do
     post "/thresholds/suppression/new?sid=123&gid=456&api_key=#{MASTERKEY}"
     expect(last_response.ok?).to eq true
-    get "/thresholds/suppression?sid=123&gid=456"
+    get "/thresholds/suppression?sid=123&gid=456&api_key=#{MASTERKEY}"
     expect(last_response.ok?).to eq true
     json = JSON.parse(last_response.body)
     expect(json['thresholds'].include?('suppress gen_id 456, sig_id 123')).to eq true

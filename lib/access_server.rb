@@ -5,13 +5,17 @@ require_relative '../config'
 
 class AccessServer < Sinatra::Base
   before do
-    if request.request_method == 'POST'
-      if !params['api_key']
-        halt unauthorized 'missing api key'
-      end
+    if !params['api_key']
+      halt unauthorized 'missing api key'
+    end
 
-      access = lookup_access_by_api_key(params['api_key'])
+    access = lookup_access_by_api_key(params['api_key'])
+    if request.request_method == 'POST'
       if !access or !access.include?('0')
+        halt unauthorized 'unknown or unauthorized api key'
+      end
+    elsif request.request_method == 'GET'
+      if !access
         halt unauthorized 'unknown or unauthorized api key'
       end
     end

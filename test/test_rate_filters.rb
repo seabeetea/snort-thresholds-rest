@@ -37,7 +37,7 @@ describe SnortThresholdsRest::Server do
     expect(last_response.ok?).to eq true
     post "/thresholds/rate_filter/update?sid=123&gid=456&track_by=dst&seconds=90&api_key=#{MASTERKEY}"
     expect(last_response.ok?).to eq true
-    get "/thresholds/rate_filter?sid=123&gid=456"
+    get "/thresholds/rate_filter?sid=123&gid=456&api_key=#{MASTERKEY}"
     expect(last_response.ok?).to eq true
     json = JSON.parse(last_response.body)
     expect(json['thresholds'].include?('rate_filter gen_id 456, sig_id 123, track by_dst, count 10, seconds 90, new_action drop, timeout 60')).to eq true
@@ -46,7 +46,7 @@ describe SnortThresholdsRest::Server do
   it 'should create and find rate_filters' do
     post "/thresholds/rate_filter/new?sid=123&gid=456&track_by=src&count=10&new_action=drop&seconds=60&timeout=60&api_key=#{MASTERKEY}"
     expect(last_response.ok?).to eq true
-    get "/thresholds/rate_filter?sid=123&gid=456"
+    get "/thresholds/rate_filter?sid=123&gid=456&api_key=#{MASTERKEY}"
     expect(last_response.ok?).to eq true
     json = JSON.parse(last_response.body)
     expect(json['thresholds'].include?('rate_filter gen_id 456, sig_id 123, track by_src, count 10, seconds 60, new_action drop, timeout 60')).to eq true
